@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudVerse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Lighter slate background */
+            color: #1e293b;
+        }
+
+        .table-header-gradient {
+            background: linear-gradient(to right, #6366f1, #8b5cf6);
+        }
+
+        .quiz-container {
+            background: #ffffff;
+            border-radius: 1.5rem; /* Increased border radius */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .quiz-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-primary {
+            background-image: linear-gradient(to right, #6366f1 0%, #a855f7 51%, #6366f1 100%);
+            background-size: 200% auto;
+            transition: 0.5s;
+        }
+
+        .btn-primary:hover {
+            background-position: right center;
+        }
+        
+        .option-btn {
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+
+        .option-btn:hover {
+            border-color: #6366f1;
+            background-color: #eef2ff;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct, .option-btn.incorrect {
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(to right, #22c55e, #16a34a);
+            border-color: #16a34a;
+        }
+
+        .option-btn.incorrect {
+            background: linear-gradient(to right, #ef4444, #dc2626);
+            border-color: #dc2626;
+        }
+
+        .progress-bar-inner {
+            transition: width 0.4s ease-in-out;
+        }
+
+        /* Certificate Styles */
+        #certificate-container {
+            border: 12px solid #c7d2fe;
+            background-color: #f8fafc;
+            padding: 2.5rem;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        #certificate-container::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 3px solid #c7d2fe;
+            pointer-events: none;
+        }
+
+        .certificate-title {
+            font-family: 'Playfair Display', serif;
+            color: #312e81;
+        }
+        
+        .table-zebra tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+        }
+         /* For the header */
+        .table-header-gradient .sticky-col {
+            background: linear-gradient(to right, #6366f1, #8b5cf6);
+        }
+        /* For even rows in the body */
+        .table-zebra tbody tr:nth-child(even) .sticky-col {
+            background-color: #f8fafc;
+        }
+        /* For odd rows in the body */
+        .table-zebra tbody tr:nth-child(odd) .sticky-col {
+            background-color: #ffffff;
+        }
+
+
+        @media print {
+            body, html {
+                 -webkit-print-color-adjust: exact;
+                 print-color-adjust: exact;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #certificate-section, #certificate-section * {
+                visibility: visible;
+            }
+            #certificate-container, #certificate-container * {
+                visibility: visible;
+            }
+            #certificate-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100vh;
+                border-width: 15px;
+                box-shadow: none;
+                margin: 0;
+                padding: 2rem;
+            }
+            #certificate-container::before {
+                top: 8px; left: 8px; right: 8px; bottom: 8px; border-width: 3px;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- Header -->
+        <header class="text-center mb-8 md:mb-12 no-print">
+            <div class="flex justify-center items-center gap-4 sm:gap-6">
+                 <a href="https://edudevelopers.onrender.com/" target="_blank" rel="noopener noreferrer" title="Visit EduDevelopers">
+                     <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1758718248/EduDevelopers_logo_m1h9db.png" alt="EduDevelopers Logo" class="h-12 sm:h-14 transition-transform duration-300 hover:scale-110">
+                 </a>
+                 <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1756037774/Gemini_Generated_Image_eu0ib0eu0ib0eu0i_z0amjh.png" alt="Testify Logo" class="h-12 sm:h-14 transition-transform duration-300 hover:scale-110">
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 pb-2 mt-4">Cloud Services Compass</h1>
+            <p class="text-base sm:text-lg text-slate-600 mt-2">Your Guide to AWS, Azure, GCP, OCI & IBM Cloud Services</p>
+        </header>
+
+        <!-- Comparison Table Section -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden no-print mb-12 md:mb-16">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-500 table-zebra">
+                    <thead class="text-xs text-white uppercase table-header-gradient">
+                        <tr>
+                            <th scope="col" class="px-3 py-3 sm:px-6 sm:py-4 sticky-col">Category</th>
+                            <th scope="col" class="px-3 py-3 sm:px-6 sm:py-4">AWS Service</th>
+                            <th scope="col" class="px-3 py-3 sm:px-6 sm:py-4">Azure Service</th>
+                            <th scope="col" class="px-3 py-3 sm:px-6 sm:py-4">Google Cloud Service</th>
+                            <th scope="col" class="px-3 py-3 sm:px-6 sm:py-4">Oracle Cloud (OCI)</th>
+                            <th scope="col" class="px-3 py-3 sm:px-6 sm:py-4">IBM Cloud</th>
+                            <th scope="col" class="px-3 py-3 sm:px-6 sm:py-4 min-w-[300px]">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                        <!-- Data Rows will be inserted here by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz" class="no-print">
+            <div class="quiz-container max-w-4xl mx-auto p-4 sm:p-8 lg:p-10">
+                <div id="quiz-start-screen">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-center text-slate-800 mb-2">Test Your Cloud Knowledge!</h2>
+                    <p class="text-center text-slate-600 mb-6">Enter your details to begin the 10-question quiz.</p>
+                    <div class="max-w-md mx-auto">
+                        <div class="mb-4">
+                            <label for="user-name" class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                            <input type="text" id="user-name" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition" placeholder="e.g., Jane Doe">
+                        </div>
+                        <div class="mb-6">
+                            <label for="user-roll" class="block text-sm font-medium text-slate-700 mb-1">Roll Number / ID</label>
+                            <input type="text" id="user-roll" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition" placeholder="e.g., 789123">
+                        </div>
+                         <p id="validation-message" class="text-red-500 text-sm text-center h-4 mb-4"></p>
+                        <div class="flex justify-center">
+                            <button id="start-quiz-btn" class="btn-primary text-white font-bold py-3 px-10 rounded-full shadow-lg transform hover:scale-105">Start Quiz</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="quiz-main-screen" class="hidden">
+                    <!-- Progress Bar and Score -->
+                    <div class="flex justify-between items-center mb-4">
+                        <div id="question-counter" class="text-sm font-medium text-slate-500">Question 1/10</div>
+                        <div id="score-display" class="text-sm font-bold text-indigo-600">Score: 0</div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                        <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2.5 rounded-full progress-bar-inner" style="width: 10%"></div>
+                    </div>
+                    
+                    <!-- Question -->
+                    <div id="question-container" class="mb-6">
+                        <p id="question-text" class="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 text-center"></p>
+                    </div>
+
+                    <!-- Options -->
+                    <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Options will be inserted here by JS -->
+                    </div>
+
+                    <!-- Feedback -->
+                    <div id="feedback-container" class="mt-6 text-center h-10 sm:h-6">
+                         <p id="feedback-text" class="font-medium"></p>
+                    </div>
+
+                    <!-- Next Button -->
+                    <div class="mt-6 flex justify-center">
+                        <button id="next-question-btn" class="btn-primary text-white font-bold py-2 px-6 rounded-lg hidden">Next Question</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificate Section -->
+        <div id="certificate-section" class="hidden mt-12 md:mt-16 text-center">
+              <div id="certificate-container" class="max-w-4xl mx-auto">
+                  <div class="flex justify-between items-center mb-4">
+                    <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1758718248/EduDevelopers_logo_m1h9db.png" alt="EduDevelopers Logo" class="h-8 sm:h-9">                      <p class="text-lg font-semibold text-indigo-700">EduDevelopers</p>
+                  </div>
+                  <h2 class="certificate-title text-4xl sm:text-5xl mt-2 mb-4">Certificate of Achievement</h2>
+                  <p class="text-slate-600 text-lg">This certificate is proudly presented to</p>
+                  <p id="cert-name" class="text-3xl font-bold text-slate-800 my-4 border-b-2 border-slate-400 pb-2 mx-auto max-w-lg"></p>
+                  <p class="text-slate-600">Roll No: <span id="cert-roll" class="font-semibold"></span></p>
+                  <p class="text-slate-600 mt-6 text-lg">For successfully completing the Cloud Fundamentals Knowledge Quiz on</p>
+                  <p id="cert-date" class="font-semibold text-slate-700 text-lg"></p>
+                  <p class="text-slate-600 mt-2">with a score of <span id="cert-score" class="font-bold text-xl text-indigo-700"></span></p>
+                  <div class="mt-12 flex justify-between items-center max-w-md mx-auto">
+                      <div class="text-center">
+                          <p class="font-semibold border-b-2 border-slate-500 px-8">Testify</p>
+                          <p class="text-sm text-slate-500">Program Lead</p>
+                      </div>
+                       <div class="text-center">
+                           <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1756037774/Gemini_Generated_Image_eu0ib0eu0ib0eu0i_z0amjh.png" alt="Testify Seal" class="h-20 w-20">
+                       </div>
+                      <div class="text-center">
+                          <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1757651069/Instructor_sign_Testify_hoxpuc.png" alt="Instructor Signature" class="h-12 mx-auto border-b-2 border-slate-500 pb-1 px-4">
+                          <p class="text-sm text-slate-500">Lead Educator</p>
+                      </div>
+                  </div>
+               </div>
+               <div class="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4 no-print">
+                   <button id="restart-quiz-btn" class="bg-slate-200 text-slate-800 font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-transform hover:bg-slate-300">Take Another Quiz</button>
+               </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center mt-12 md:mt-16 pt-8 border-t border-slate-200 no-print">
+            <p class="text-slate-500">Designed and developed by <a href="https://edudevelopers.onrender.com/" target="_blank" rel="noopener noreferrer" class="font-medium text-indigo-500 hover:underline">EduDevelopers</a> with Testify.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const tableData = [
+            { category: 'Compute', aws: 'Amazon EC2', azure: 'Virtual Machines', gcp: 'Compute Engine', oci: 'Compute Instances (VM, Bare Metal)', ibm: 'Virtual Servers / Bare Metal Servers', description: 'Provides scalable virtual servers (instances) in the cloud.' },
+            { category: 'Compute', aws: 'EC2 Bare Metal Instances', azure: 'BareMetal Infrastructure', gcp: 'Bare Metal Solution', oci: 'Bare Metal & Dedicated VM Hosts', ibm: 'Bare Metal Servers', description: 'Provides physical servers without a hypervisor for high-performance or specialized workloads.' },
+            { category: 'Compute', aws: 'AWS Lambda', azure: 'Azure Functions', gcp: 'Cloud Functions', oci: 'Oracle Functions', ibm: 'IBM Cloud Functions', description: 'A serverless compute service to run event-triggered code without managing servers.' },
+            { category: 'Compute', aws: 'Amazon EKS', azure: 'Azure Kubernetes Service (AKS)', gcp: 'Google Kubernetes Engine (GKE)', oci: 'Container Engine for Kubernetes (OKE)', ibm: 'IBM Cloud Kubernetes Service', description: 'A managed service to orchestrate, manage, and scale containerized applications using Kubernetes.' },
+            { category: 'Storage', aws: 'Amazon S3', azure: 'Blob Storage', gcp: 'Cloud Storage', oci: 'Object Storage', ibm: 'Object Storage', description: 'Highly scalable object storage for unstructured data like images, videos, and backups.' },
+            { category: 'Storage', aws: 'Amazon EBS', azure: 'Azure Disk Storage', gcp: 'Persistent Disk', oci: 'Block Volume', ibm: 'Block Storage', description: 'High-performance, persistent block-level storage volumes for use with virtual machines.' },
+            { category: 'Storage', aws: 'Amazon EFS / FSx', azure: 'Azure Files', gcp: 'Filestore', oci: 'File Storage', ibm: 'File Storage', description: 'A fully managed, network-attached file storage service for cloud and on-premises use.' },
+            { category: 'Storage', aws: 'Amazon S3 Glacier', azure: 'Azure Archive Storage', gcp: 'Cloud Storage Archive', oci: 'Archive Storage', ibm: 'Cloud Object Storage Archive', description: 'Extremely low-cost, long-term archival storage for infrequently accessed data.' },
+            { category: 'Databases', aws: 'Amazon RDS / Aurora', azure: 'SQL Database / DB for...', gcp: 'Cloud SQL / Spanner', oci: 'Autonomous Database / MySQL HeatWave', ibm: 'IBM Db2 on Cloud / Databases for...', description: 'Managed relational database services for popular engines like MySQL, PostgreSQL, and SQL Server.' },
+            { category: 'Databases', aws: 'Amazon DynamoDB', azure: 'Cosmos DB', gcp: 'Bigtable / Firestore', oci: 'NoSQL Database', ibm: 'Databases for MongoDB / Cloudant', description: 'Fully managed, high-performance NoSQL database services for various data models.' },
+            { category: 'Databases', aws: 'Amazon ElastiCache', azure: 'Azure Cache for Redis', gcp: 'Memorystore', oci: 'OCI Cache with Redis', ibm: 'Databases for Redis', description: 'Managed in-memory data store and cache service to improve application performance.' },
+            { category: 'Networking', aws: 'Amazon VPC', azure: 'Virtual Network (VNet)', gcp: 'Virtual Private Cloud (VPC)', oci: 'Virtual Cloud Network (VCN)', ibm: 'Virtual Private Cloud (VPC)', description: 'Provides an isolated and secure virtual network to launch and manage resources.' },
+            { category: 'Networking', aws: 'Elastic Load Balancing', azure: 'Load Balancer', gcp: 'Cloud Load Balancing', oci: 'Load Balancer', ibm: 'Load Balancer', description: 'Automatically distributes incoming application traffic across multiple targets.' },
+            { category: 'Networking', aws: 'Amazon Route 53', azure: 'Azure DNS', gcp: 'Cloud DNS', oci: 'OCI DNS', ibm: 'DNS Services', description: 'A highly available and scalable Domain Name System (DNS) web service.' },
+            { category: 'Networking', aws: 'AWS Direct Connect', azure: 'ExpressRoute', gcp: 'Cloud Interconnect', oci: 'FastConnect', ibm: 'Direct Link', description: 'Establishes a dedicated, private network connection from on-premises to the cloud.' },
+            { category: 'Analytics', aws: 'Amazon EMR / Athena', azure: 'Azure Synapse / HDInsight', gcp: 'Dataproc / BigQuery', oci: 'OCI Data Flow / Data Analytics', ibm: 'Analytics Engine / Watson Studio', description: 'Services for big data processing, data warehousing, and running analytics frameworks like Spark and Hadoop.' },
+            { category: 'AI & ML', aws: 'Amazon SageMaker', azure: 'Azure Machine Learning', gcp: 'Vertex AI', oci: 'OCI AI Services (Data Science)', ibm: 'Watson Studio', description: 'A comprehensive platform to build, train, and deploy machine learning models at scale.' },
+            { category: 'AI & ML', aws: 'Rekognition / Polly', azure: 'Cognitive Services', gcp: 'Vision AI / NLP AI', oci: 'OCI AI Services (Vision, Speech)', ibm: 'Watson Natural Language Understanding', description: 'Pre-trained APIs for adding intelligence like vision, speech, and language to applications.' },
+            { category: 'Migration & Transfer', aws: 'AWS Snowball / DMS', azure: 'Azure Migrate / Data Box', gcp: 'Transfer Appliance / Database Migration Service', oci: 'Data Transfer Service', ibm: 'Mass Data Migration / Lift CLI', description: 'Services and physical appliances for transferring large amounts of data into the cloud.' },
+            { category: 'Management & Governance', aws: 'Amazon CloudWatch', azure: 'Azure Monitor', gcp: 'Cloud Monitoring', oci: 'OCI Monitoring', ibm: 'IBM Cloud Monitoring', description: 'Monitoring and observability service for cloud resources and applications.' },
+            { category: 'Management & Governance', aws: 'AWS CloudFormation', azure: 'Azure Resource Manager (ARM)', gcp: 'Cloud Deployment Manager', oci: 'OCI Resource Manager', ibm: 'IBM Cloud Schematics', description: 'Provides infrastructure as code (IaC) to automate the provisioning of cloud resources.' },
+            { category: 'Application Integration', aws: 'Amazon SQS / SNS', azure: 'Azure Service Bus / Queue Storage', gcp: 'Pub/Sub', oci: 'OCI Queue', ibm: 'IBM Message Queue / Event Streams', description: 'Managed message queuing and publish-subscribe services for decoupling microservices and applications.' },
+            { category: 'Security & Identity', aws: 'AWS IAM', azure: 'Azure Active Directory', gcp: 'Cloud IAM', oci: 'OCI IAM', ibm: 'IBM Cloud IAM', description: 'Manages user identities and controls their access to cloud services and resources.' },
+            { category: 'Security & Identity', aws: 'AWS KMS / Secrets Manager', azure: 'Azure Key Vault', gcp: 'KMS / Secret Manager', oci: 'OCI Vault', ibm: 'Key Protect / Secrets Manager', description: 'Manages cryptographic keys and secrets to secure data and applications.' },
+            { category: 'Internet of Things (IoT)', aws: 'AWS IoT Core', azure: 'Azure IoT Hub', gcp: 'Cloud IoT Core', oci: 'OCI IoT', ibm: 'Watson IoT Platform', description: 'Managed services to connect, manage, and ingest data from distributed IoT devices.' }
+        ];
+
+        const fullQuizQuestions = [
+            { question: "What is the key difference between Scalability and Elasticity in cloud computing?", options: ["Scalability is long-term, Elasticity is short-term", "They are the same concept", "Scalability handles gradual growth, Elasticity handles sudden changes", "Elasticity is for storage, Scalability is for compute"], answer: "Scalability handles gradual growth, Elasticity handles sudden changes" },
+            { question: "Which of the following is an example of Infrastructure as a Service (IaaS)?", options: ["Gmail", "AWS Lambda", "Amazon EC2", "Windows 10"], answer: "Amazon EC2" },
+            { question: "In the 'Shared Responsibility Model', who is responsible for securing the physical data centers?", options: ["The customer", "The cloud provider", "Both share equal responsibility", "A third-party auditor"], answer: "The cloud provider" },
+            { question: "Which AWS service is used for creating a private, isolated section of the cloud?", options: ["Amazon S3", "Amazon EC2", "Amazon VPC", "Amazon Route 53"], answer: "Amazon VPC" },
+            { question: "What is the primary purpose of a load balancer in a cloud architecture?", options: ["To store user data securely", "To distribute incoming traffic across multiple servers", "To run code without a server", "To connect a private network to the internet"], answer: "To distribute incoming traffic across multiple servers" },
+            { question: "Azure's primary service for identity and access management is known as:", options: ["Azure Key Vault", "Azure Active Directory", "Azure Security Center", "Azure IAM"], answer: "Azure Active Directory" },
+            { question: "'Serverless computing' means:", options: ["There are no servers involved", "The customer does not manage or provision servers", "The code runs on the client's machine", "It only works for static websites"], answer: "The customer does not manage or provision servers" },
+            { question: "What is 'Infrastructure as Code' (IaC)?", options: ["A programming language for hardware", "Managing infrastructure through configuration files", "A type of serverless computing", "A hardware description language"], answer: "Managing infrastructure through configuration files" },
+            { question: "Which Google Cloud service is a fully managed data warehouse for large-scale analytics?", options: ["Cloud SQL", "Bigtable", "BigQuery", "Cloud Storage"], answer: "BigQuery" },
+            { question: "What is the difference between a Region and an Availability Zone (AZ)?", options: ["A Region is a single data center, an AZ is multiple data centers", "An AZ is a single data center, a Region is a geographic area with multiple AZs", "They are interchangeable terms", "A Region is for compute, an AZ is for storage"], answer: "An AZ is a single data center, a Region is a geographic area with multiple AZs" },
+            { question: "Which of the following best describes a 'SaaS' (Software as a Service) offering?", options: ["Renting a virtual machine", "Using a managed database", "Subscribing to an online email service like Gmail", "Using a container orchestration platform"], answer: "Subscribing to an online email service like Gmail" },
+            { question: "What does 'High Availability' refer to in a cloud environment?", options: ["The ability to scale resources up and down", "The system's ability to remain operational despite failures", "The speed of data transfer", "The physical security of the data center"], answer: "The system's ability to remain operational despite failures" },
+            { question: "Which of the following is NOT a relational database offering?", options: ["Amazon RDS", "Azure SQL Database", "Google Cloud SQL", "Amazon DynamoDB"], answer: "Amazon DynamoDB" },
+            { question: "What is the purpose of a Content Delivery Network (CDN)?", options: ["To run backend application logic", "To manage user identities", "To cache content closer to users for faster delivery", "To monitor application performance"], answer: "To cache content closer to users for faster delivery" },
+            { question: "In AWS, what service would you use to define user permissions and roles?", options: ["AWS Shield", "Amazon GuardDuty", "AWS IAM (Identity and Access Management)", "AWS KMS"], answer: "AWS IAM (Identity and Access Management)" },
+            { question: "What is a Virtual Private Network (VPN) used for in the cloud?", options: ["To create a secure, encrypted connection over the internet", "To distribute web traffic", "To store large binary files", "To automate software deployments"], answer: "To create a secure, encrypted connection over the internet" },
+            { question: "Which of these is a key benefit of cloud computing over on-premises?", options: ["High upfront capital expenditure", "Converting capital expenditure to operational expenditure", "Long hardware procurement cycles", "Requiring a large IT staff for server maintenance"], answer: "Converting capital expenditure to operational expenditure" },
+            { question: "What is 'containerization', and which tool is most commonly associated with it?", options: ["Running multiple OS on one machine; VMware", "Packaging code with dependencies; Docker", "Serverless execution; AWS Lambda", "Automating infrastructure; Terraform"], answer: "Packaging code with dependencies; Docker" },
+            { question: "How does Block Storage (like Amazon EBS) differ from Object Storage (like Amazon S3)?", options: ["Block is for files, Object is for databases", "Block is presented as a disk drive, Object is a flat namespace", "Block storage is cheaper for archival", "Object storage is faster for operating systems"], answer: "Block is presented as a disk drive, Object is a flat namespace" },
+            { question: "What is the primary role of a tool like Terraform or AWS CloudFormation?", options: ["To monitor application logs", "To write application code", "To provision and manage infrastructure as code", "To scan for security vulnerabilities"], answer: "To provision and manage infrastructure as code" },
+            { question: "What is the key difference between Scalability and Elasticity in cloud computing?", options: ["Scalability is long-term, Elasticity is short-term", "They are the same concept", "Scalability handles gradual growth, Elasticity handles sudden changes", "Elasticity is for storage, Scalability is for compute"], answer: "Scalability handles gradual growth, Elasticity handles sudden changes" },
+            { question: "Which of the following is an example of Infrastructure as a Service (IaaS)?", options: ["Gmail", "AWS Lambda", "Amazon EC2", "Windows 10"], answer: "Amazon EC2" },
+            { question: "Which of the following best describes a 'SaaS' (Software as a Service) offering?", options: ["Renting a virtual machine", "Using a managed database", "Subscribing to an online email service like Gmail", "Using a container orchestration platform"], answer: "Subscribing to an online email service like Gmail" },
+            { question: "Which service is an example of Platform as a Service (PaaS)?", options: ["Amazon EC2", "Azure Virtual Machines", "Google App Engine", "Dropbox"], answer: "Google App Engine" },
+            { question: "In the 'Shared Responsibility Model', who is responsible for securing the physical data centers?", options: ["The customer", "The cloud provider", "Both share equal responsibility", "A third-party auditor"], answer: "The cloud provider" },
+            { question: "Which of these is a key benefit of cloud computing over on-premises?", options: ["High upfront capital expenditure", "Converting capital expenditure to operational expenditure", "Long hardware procurement cycles", "Requiring a large IT staff for server maintenance"], answer: "Converting capital expenditure to operational expenditure" },
+            { question: "What does 'High Availability' refer to in a cloud environment?", options: ["The ability to scale resources up and down", "The system's ability to remain operational despite failures", "The speed of data transfer", "The physical security of the data center"], answer: "The system's ability to remain operational despite failures" },
+            { question: "What is the difference between a Region and an Availability Zone (AZ)?", options: ["A Region is a single data center, an AZ is multiple data centers", "An AZ is a single data center, a Region is a geographic area with multiple AZs", "They are interchangeable terms", "A Region is for compute, an AZ is for storage"], answer: "An AZ is a single data center, a Region is a geographic area with multiple AZs" },
+            { question: "What does RPO (Recovery Point Objective) define in a disaster recovery plan?", options: ["The time it takes to recover", "The maximum acceptable data loss", "The number of recovery points", "The cost of recovery"], answer: "The maximum acceptable data loss" },
+            { question: "Which statement best describes 'Fault Tolerance'?", options: ["The ability to scale on demand", "The ability to recover quickly from a failure", "The ability to withstand a failure and remain functional", "The ability to secure data from threats"], answer: "The ability to withstand a failure and remain functional" },
+            { question: "Which cloud model involves using multiple cloud providers for different services?", options: ["Hybrid Cloud", "Private Cloud", "Community Cloud", "Multi-Cloud"], answer: "Multi-Cloud" },
+            { question: "What is the benefit of 'Pay-as-you-go' pricing in the cloud?", options: ["You pay a fixed monthly fee", "You only pay for the resources you consume", "It's always the cheapest option", "You get unlimited resources for one price"], answer: "You only pay for the resources you consume" },
+            
+            // Core Concepts
+            { question: "What is the key difference between Scalability and Elasticity in cloud computing?", options: ["Scalability is long-term, Elasticity is short-term", "They are the same concept", "Scalability handles gradual growth, Elasticity handles sudden changes", "Elasticity is for storage, Scalability is for compute"], answer: "Scalability handles gradual growth, Elasticity handles sudden changes" },
+            { question: "Which of the following is an example of Infrastructure as a Service (IaaS)?", options: ["Gmail", "AWS Lambda", "Amazon EC2", "Windows 10"], answer: "Amazon EC2" },
+            { question: "Which of the following best describes a 'SaaS' (Software as a Service) offering?", options: ["Renting a virtual machine", "Using a managed database", "Subscribing to an online email service like Gmail", "Using a container orchestration platform"], answer: "Subscribing to an online email service like Gmail" },
+            { question: "Which service is an example of Platform as a Service (PaaS)?", options: ["Amazon EC2", "Azure Virtual Machines", "Google App Engine", "Dropbox"], answer: "Google App Engine" },
+            { question: "In the 'Shared Responsibility Model', who is responsible for securing the physical data centers?", options: ["The customer", "The cloud provider", "Both share equal responsibility", "A third-party auditor"], answer: "The cloud provider" },
+            { question: "Which of these is a key benefit of cloud computing over on-premises?", options: ["High upfront capital expenditure", "Converting capital expenditure to operational expenditure", "Long hardware procurement cycles", "Requiring a large IT staff for server maintenance"], answer: "Converting capital expenditure to operational expenditure" },
+            { question: "What does 'High Availability' refer to in a cloud environment?", options: ["The ability to scale resources up and down", "The system's ability to remain operational despite failures", "The speed of data transfer", "The physical security of the data center"], answer: "The system's ability to remain operational despite failures" },
+            { question: "What is the difference between a Region and an Availability Zone (AZ)?", options: ["A Region is a single data center, an AZ is multiple data centers", "An AZ is a single data center, a Region is a geographic area with multiple AZs", "They are interchangeable terms", "A Region is for compute, an AZ is for storage"], answer: "An AZ is a single data center, a Region is a geographic area with multiple AZs" },
+            { question: "What does RPO (Recovery Point Objective) define in a disaster recovery plan?", options: ["The time it takes to recover", "The maximum acceptable data loss", "The number of recovery points", "The cost of recovery"], answer: "The maximum acceptable data loss" },
+            { question: "Which statement best describes 'Fault Tolerance'?", options: ["The ability to scale on demand", "The ability to recover quickly from a failure", "The ability to withstand a failure and remain functional", "The ability to secure data from threats"], answer: "The ability to withstand a failure and remain functional" },
+            { question: "Which cloud model involves using multiple cloud providers for different services?", options: ["Hybrid Cloud", "Private Cloud", "Community Cloud", "Multi-Cloud"], answer: "Multi-Cloud" },
+            { question: "What is the benefit of 'Pay-as-you-go' pricing in the cloud?", options: ["You pay a fixed monthly fee", "You only pay for the resources you consume", "It's always the cheapest option", "You get unlimited resources for one price"], answer: "You only pay for the resources you consume" },
+            
+            // Compute & Serverless
+            { question: "'Serverless computing' means:", options: ["There are no servers involved", "The customer does not manage or provision servers", "The code runs on the client's machine", "It only works for static websites"], answer: "The customer does not manage or provision servers" },
+            { question: "What is 'auto-scaling'?", options: ["Automatically resizing a database", "Automatically adjusting the number of compute resources based on demand", "Automatically backing up data", "Automatically patching operating systems"], answer: "Automatically adjusting the number of compute resources based on demand" },
+            { question: "Which of these is NOT a typical trigger for an AWS Lambda function?", options: ["An HTTP request from API Gateway", "A new file uploaded to S3", "A new message in an SQS queue", "A user logging into the AWS console"], answer: "A user logging into the AWS console" },
+
+            // Storage
+            { question: "How does Block Storage (like Amazon EBS) differ from Object Storage (like Amazon S3)?", options: ["Block is for files, Object is for databases", "Block is presented as a disk drive, Object is a flat namespace", "Block storage is cheaper for archival", "Object storage is faster for operating systems"], answer: "Block is presented as a disk drive, Object is a flat namespace" },
+            { question: "Which storage service is best suited for long-term archival with infrequent access?", options: ["Amazon S3 Standard", "Amazon EBS", "Amazon EFS", "Amazon S3 Glacier Deep Archive"], answer: "Amazon S3 Glacier Deep Archive" },
+            { question: "What type of storage is Azure Files?", options: ["Object Storage", "Block Storage", "Managed File Share (SMB/NFS)", "NoSQL Database"], answer: "Managed File Share (SMB/NFS)" },
+            
+            // Databases
+            { question: "Which of the following is NOT a relational database offering?", options: ["Amazon RDS", "Azure SQL Database", "Google Cloud SQL", "Amazon DynamoDB"], answer: "Amazon DynamoDB" },
+            { question: "Which of the following is a key-value NoSQL database service?", options: ["Amazon RDS for MySQL", "Google Cloud Spanner", "Amazon DynamoDB", "Azure SQL Database"], answer: "Amazon DynamoDB" },
+            { question: "Which AWS database service provides a fully managed graph database?", options: ["Amazon Aurora", "Amazon DynamoDB", "Amazon Neptune", "Amazon DocumentDB"], answer: "Amazon Neptune" },
+
+            // Networking
+            { question: "Which AWS service is used for creating a private, isolated section of the cloud?", options: ["Amazon S3", "Amazon EC2", "Amazon VPC", "Amazon Route 53"], answer: "Amazon VPC" },
+            { question: "What is the primary purpose of a load balancer in a cloud architecture?", options: ["To store user data securely", "To distribute incoming traffic across multiple servers", "To run code without a server", "To connect a private network to the internet"], answer: "To distribute incoming traffic across multiple servers" },
+            { question: "What is the purpose of a Content Delivery Network (CDN)?", options: ["To run backend application logic", "To manage user identities", "To cache content closer to users for faster delivery", "To monitor application performance"], answer: "To cache content closer to users for faster delivery" },
+            { question: "What is a Virtual Private Network (VPN) used for in the cloud?", options: ["To create a secure, encrypted connection over the internet", "To distribute web traffic", "To store large binary files", "To automate software deployments"], answer: "To create a secure, encrypted connection over the internet" },
+            { question: "What is a 'VPC Peering' connection?", options: ["A connection from on-premises to a VPC", "A connection between two VPCs", "A public connection to a VPC", "A connection to the internet"], answer: "A connection between two VPCs" },
+            { question: "A company wants to extend its on-premises data center to the cloud without using the public internet. What service should they use?", options: ["VPN Gateway", "AWS Direct Connect / Azure ExpressRoute", "Load Balancer", "NAT Gateway"], answer: "AWS Direct Connect / Azure ExpressRoute" },
+            
+            // Security & Identity
+            { question: "Azure's primary service for identity and access management is known as:", options: ["Azure Key Vault", "Azure Active Directory", "Azure Security Center", "Azure IAM"], answer: "Azure Active Directory" },
+            { question: "In AWS, what service would you use to define user permissions and roles?", options: ["AWS Shield", "Amazon GuardDuty", "AWS IAM (Identity and Access Management)", "AWS KMS"], answer: "AWS IAM (Identity and Access Management)" },
+            { question: "In AWS, what is the purpose of an IAM Role?", options: ["A user account for a person", "To grant permissions to AWS services", "A group of users", "A password policy"], answer: "To grant permissions to AWS services" },
+            { question: "What does a 'Security Group' in AWS act as?", options: ["A physical firewall for the data center", "A virtual firewall for an EC2 instance", "A user access control list", "An encryption key manager"], answer: "A virtual firewall for an EC2 instance" },
+            { question: "What is 'encryption in transit'?", options: ["Encrypting data stored on a hard drive", "Encrypting data while it is moving across a network", "Encrypting data in a database", "Encrypting backup files"], answer: "Encrypting data while it is moving across a network" },
+
+            // DevOps & Management
+            { question: "What is 'Infrastructure as Code' (IaC)?", options: ["A programming language for hardware", "Managing infrastructure through configuration files", "A type of serverless computing", "A hardware description language"], answer: "Managing infrastructure through configuration files" },
+            { question: "What is 'containerization', and which tool is most commonly associated with it?", options: ["Running multiple OS on one machine; VMware", "Packaging code with dependencies; Docker", "Serverless execution; AWS Lambda", "Automating infrastructure; Terraform"], answer: "Packaging code with dependencies; Docker" },
+            { question: "What is the primary role of a tool like Terraform or AWS CloudFormation?", options: ["To monitor application logs", "To write application code", "To provision and manage infrastructure as code", "To scan for security vulnerabilities"], answer: "To provision and manage infrastructure as code" },
+            { question: "What is the basic unit of deployment in Kubernetes?", options: ["Container", "Pod", "Node", "Service"], answer: "Pod" },
+            { question: "In the context of CI/CD, what does 'CD' stand for?", options: ["Continuous Development", "Continuous Delivery/Deployment", "Code Documentation", "Cloud Design"], answer: "Continuous Delivery/Deployment" },
+            { question: "What is the purpose of AWS CloudTrail?", options: ["To monitor application performance", "To provide Infrastructure as Code", "To log all API calls made within an AWS account", "To manage user identities"], answer: "To log all API calls made within an AWS account" },
+
+            // Provider-Specific Services
+            { question: "Which Google Cloud service is a fully managed data warehouse for large-scale analytics?", options: ["Cloud SQL", "Bigtable", "BigQuery", "Cloud Storage"], answer: "BigQuery" },
+            { question: "Which Azure service is used to run web applications without managing the underlying infrastructure?", options: ["Azure Virtual Machines", "Azure App Service", "Azure Kubernetes Service", "Azure Container Instances"], answer: "Azure App Service" },
+            { question: "In Azure, what is the function of a Resource Group?", options: ["A group of users with the same permissions", "A container that holds related resources for an Azure solution", "A type of virtual machine", "A geographical location"], answer: "A container that holds related resources for an Azure solution" },
+            { question: "In GCP, what is the top-level container for all resources?", options: ["Folder", "Project", "Organization", "Bucket"], answer: "Project" },
+            { question: "Which Azure service is most similar to AWS's S3?", options: ["Azure Files", "Azure Disk Storage", "Azure Blob Storage", "Azure SQL"], answer: "Azure Blob Storage" },
+            { question: "Which of these is a managed container orchestration service?", options: ["Docker Swarm", "Amazon EKS (Elastic Kubernetes Service)", "Kubernetes (self-hosted)", "Docker Desktop"], answer: "Amazon EKS (Elastic Kubernetes Service)" },
+
+            // Architecture
+            { question: "What is the main benefit of a microservices architecture?", options: ["Simpler to manage", "Lower cost", "Services are independently deployable", "Requires less code"], answer: "Services are independently deployable" },
+            { question: "What is the purpose of an API Gateway?", options: ["To store API keys securely", "To act as a single entry point for all client requests", "To monitor API performance", "To connect to a database"], answer: "To act as a single entry point for all client requests" },
+            { question: "If an EC2 instance's underlying hardware fails, what is the best way to ensure your application remains available?", options: ["Manually restart the instance", "Run the application across multiple AZs with a load balancer", "Take frequent snapshots", "Increase the instance size"], answer: "Run the application across multiple AZs with a load balancer" },
+            { question: "What is a 'golden image' or AMI (Amazon Machine Image)?", options: ["A backup of a database", "A pre-configured template for creating virtual machines", "A type of load balancer", "A security certificate"], answer: "A pre-configured template for creating virtual machines" }
+        ];
+        
+        // Remove duplicates to ensure a better quiz experience
+        const uniqueQuestions = Array.from(new Set(fullQuizQuestions.map(q => q.question)))
+            .map(question => {
+                return fullQuizQuestions.find(q => q.question === question)
+            });
+
+        let quizQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userName = '';
+        let userRoll = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableBody = document.querySelector('tbody');
+            tableData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50'; // Zebra stripes handled by CSS
+                tr.innerHTML = `
+                    <td class="px-3 py-3 sm:px-6 sm:py-4 font-medium text-slate-900 whitespace-nowrap sticky-col">${row.category}</td>
+                    <td class="px-3 py-3 sm:px-6 sm:py-4">${row.aws}</td>
+                    <td class="px-3 py-3 sm:px-6 sm:py-4">${row.azure}</td>
+                    <td class="px-3 py-3 sm:px-6 sm:py-4">${row.gcp}</td>
+                    <td class="px-3 py-3 sm:px-6 sm:py-4">${row.oci}</td>
+                    <td class="px-3 py-3 sm:px-6 sm:py-4">${row.ibm}</td>
+                    <td class="px-3 py-3 sm:px-6 sm:py-4">${row.description}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+            
+            const startQuizBtn = document.getElementById('start-quiz-btn');
+            const restartQuizBtn = document.getElementById('restart-quiz-btn');
+            const nextQuestionBtn = document.getElementById('next-question-btn');
+            const printBtn = document.getElementById('print-btn');
+            
+            startQuizBtn.addEventListener('click', attemptStartQuiz);
+            restartQuizBtn.addEventListener('click', restartQuiz);
+            nextQuestionBtn.addEventListener('click', showNextQuestion);
+            printBtn.addEventListener('click', () => window.print());
+        });
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function attemptStartQuiz() {
+            userName = document.getElementById('user-name').value.trim();
+            userRoll = document.getElementById('user-roll').value.trim();
+            const validationMessage = document.getElementById('validation-message');
+
+            if (userName === '' || userRoll === '') {
+                validationMessage.textContent = 'Please enter both your name and roll number.';
+                return;
+            }
+            validationMessage.textContent = '';
+            startQuiz();
+        }
+
+        function startQuiz() {
+            document.getElementById('quiz-start-screen').classList.add('hidden');
+            document.getElementById('certificate-section').classList.add('hidden');
+            document.getElementById('quiz-main-screen').classList.remove('hidden');
+
+            shuffleArray(uniqueQuestions);
+            quizQuestions = uniqueQuestions.slice(0, 10);
+
+            currentQuestionIndex = 0;
+            score = 0;
+            updateScoreDisplay();
+            showQuestion();
+        }
+
+        function restartQuiz() {
+            // This reloads the page to ensure a clean state
+            window.location.reload();
+        }
+
+        function showQuestion() {
+            resetState();
+            const question = quizQuestions[currentQuestionIndex];
+            document.getElementById('question-text').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            
+            const shuffledOptions = [...question.options];
+            shuffleArray(shuffledOptions);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn', 'w-full', 'text-left', 'p-4', 'rounded-lg', 'font-medium');
+                button.addEventListener('click', selectAnswer);
+                optionsContainer.appendChild(button);
+            });
+            
+            updateProgress();
+        }
+        
+        function resetState() {
+            document.getElementById('next-question-btn').classList.add('hidden');
+            document.getElementById('feedback-text').textContent = '';
+            const optionsContainer = document.getElementById('options-container');
+            while(optionsContainer.firstChild) {
+                optionsContainer.removeChild(optionsContainer.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            const selectedButton = e.target;
+            const correct = selectedButton.textContent === quizQuestions[currentQuestionIndex].answer;
+            
+            const feedbackText = document.getElementById('feedback-text');
+            if(correct) {
+                score++;
+                selectedButton.classList.add('correct');
+                feedbackText.textContent = "Correct!";
+                feedbackText.className = "font-medium text-green-600";
+            } else {
+                selectedButton.classList.add('incorrect');
+                feedbackText.textContent = `Sorry, the correct answer was: ${quizQuestions[currentQuestionIndex].answer}`;
+                feedbackText.className = "font-medium text-red-600";
+            }
+            
+            Array.from(document.getElementById('options-container').children).forEach(button => {
+                 if (button.textContent === quizQuestions[currentQuestionIndex].answer) {
+                     // Ensure the correct answer is always highlighted, even if not picked
+                     button.classList.remove('incorrect');
+                     button.classList.add('correct');
+                 }
+                 button.disabled = true;
+            });
+
+            updateScoreDisplay();
+            
+            if (quizQuestions.length > currentQuestionIndex + 1) {
+                document.getElementById('next-question-btn').classList.remove('hidden');
+            } else {
+                setTimeout(showCertificate, 2000); // Increased timeout for better UX
+            }
+        }
+
+        function showNextQuestion() {
+             currentQuestionIndex++;
+             showQuestion();
+        }
+
+        function showCertificate() {
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('quiz-main-screen').classList.add('hidden');
+            document.getElementById('certificate-section').classList.remove('hidden');
+            
+            document.getElementById('cert-name').textContent = userName;
+            document.getElementById('cert-roll').textContent = userRoll;
+            const percentage = Math.round((score / quizQuestions.length) * 100);
+            document.getElementById('cert-score').textContent = `${score}/${quizQuestions.length} (${percentage}%)`;
+            document.getElementById('cert-date').textContent = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-display').textContent = `Score: ${score}`;
+        }
+        
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('question-counter').textContent = `Question ${currentQuestionIndex + 1}/${quizQuestions.length}`;
+        }
+
+    </script>
+</body>
+</html>
+
